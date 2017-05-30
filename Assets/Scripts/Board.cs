@@ -22,11 +22,6 @@ public class Board : MonoBehaviour {
         DrawEmptyCells();
     }
 	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
     void DrawEmptyCells() {
         if (m_emptySprite) {
             for (int y = 0; y < m_height - m_topSpacing; y++) {
@@ -37,7 +32,7 @@ public class Board : MonoBehaviour {
                 }
             }
         } else {
-            Debug.Log("Assign the emptySprite!");
+            Debug.Log("Assign the emptySprite");
         }
     }
 

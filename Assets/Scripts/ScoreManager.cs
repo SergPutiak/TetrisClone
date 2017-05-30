@@ -5,18 +5,24 @@ using UnityEngine.UI;
 
 public class ScoreManager : MonoBehaviour {
 
-    int m_score;
-    int m_linesTolevelUp;
     public int Level { get; set; }
 
     [SerializeField] int m_linesPerLevel = 30;
     [SerializeField] Text m_linesToLevelUpText;
     [SerializeField] Text m_levelText;
     [SerializeField] Text m_scoreText;
+    [SerializeField] Text m_highScoreText;
+
+    int m_score;
+    int m_highScore;
+    int m_linesTolevelUp;
+
+    const string HIGHSCORE_KEY = "high_score";
 
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
+        m_highScore = GetHighScore();
         Reset();
         UpdateUIText();
 	}
@@ -43,13 +49,9 @@ public class ScoreManager : MonoBehaviour {
         if (m_linesTolevelUp <= 0) {
             LevelUp();
         }
-        UpdateUIText();
-    }
-
-    public void Reset() {
-        m_score = 0;
-        Level = 1;
-        m_linesTolevelUp = m_linesPerLevel * Level;
+        if (m_score > m_highScore) {
+            m_highScore = m_score;
+        }
         UpdateUIText();
     }
 
@@ -63,10 +65,29 @@ public class ScoreManager : MonoBehaviour {
         if (m_levelText) {
             m_levelText.text = Level.ToString();
         }
+        if (m_highScoreText) {
+            m_highScoreText.text = m_highScore.ToString();
+        }
     }
 
     public void LevelUp() {
         Level++;
         m_linesTolevelUp = m_linesPerLevel + m_linesTolevelUp;
+    }
+
+    public void Reset() {
+        m_score = 0;
+        Level = 1;
+        m_linesTolevelUp = m_linesPerLevel;
+        SetHighScore();
+        UpdateUIText();
+    }
+
+    public void SetHighScore() {
+        PlayerPrefs.SetInt(HIGHSCORE_KEY, m_highScore);
+    }
+
+    public int GetHighScore() {
+        return PlayerPrefs.GetInt(HIGHSCORE_KEY);
     }
 }

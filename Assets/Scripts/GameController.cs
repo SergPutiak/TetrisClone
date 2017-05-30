@@ -102,7 +102,6 @@ public class GameController : MonoBehaviour {
         }
     }
 
-
     private void LandShape() {
         int curLevel = m_scoreManager.Level;
         m_activeShape.MoveUp();
@@ -155,6 +154,7 @@ public class GameController : MonoBehaviour {
     }
 
     public void Exit() {
+        m_scoreManager.SetHighScore();
         Application.Quit();
     }
 }
