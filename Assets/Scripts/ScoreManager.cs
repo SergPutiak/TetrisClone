@@ -47,8 +47,10 @@ public class ScoreManager : MonoBehaviour {
     }
 
     public void Reset() {
+        m_score = 0;
         Level = 1;
         m_linesTolevelUp = m_linesPerLevel * Level;
+        UpdateUIText();
     }
 
     void UpdateUIText() {

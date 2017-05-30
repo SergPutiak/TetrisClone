@@ -11,7 +11,7 @@ public class GameController : MonoBehaviour {
     Spawner m_spawner;
     ScoreManager m_scoreManager;
     Tetrimino m_activeShape;
-    float m_dropInterval = .3f;
+    float m_dropInterval = 1f;
     float m_dropIntervalModded;
     float m_timeToDrop;
     bool m_gameOver;
@@ -25,15 +25,15 @@ public class GameController : MonoBehaviour {
         m_scoreManager = FindObjectOfType<ScoreManager>();
 
         if (!m_gameBoard) {
-            Debug.Log("WARNING! There is no game board defined!");
+            Debug.Log("There is no game board");
         }
 
         if (!m_scoreManager) {
-            Debug.Log("WARNING! There is no scoreManager defined!");
+            Debug.Log("There is no scoreManager");
         }
 
         if (!m_spawner) {
-            Debug.Log("WARNING! There is no spawner defined!");
+            Debug.Log("There is no spawner");
         } else {
             m_spawner.transform.position = Vectorf.Round(m_spawner.transform.position);
             if (m_activeShape == null) {
@@ -50,16 +50,20 @@ public class GameController : MonoBehaviour {
         }
 
         m_dropIntervalModded = m_dropInterval;
-
     }
 
     // Update is called once per frame
     void Update () {
-        CheckInput();
+        if (!m_gameOver) {
+            CheckInput();
+        }
     }
 
-
     void CheckInput() {
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            TogglePause();
+        }
+
         if (Input.GetKeyDown(KeyCode.Keypad1)) {
             m_activeShape.MoveLeft();
             if (!m_gameBoard.IsValidPosition(m_activeShape)) {
@@ -108,16 +112,16 @@ public class GameController : MonoBehaviour {
         }
         m_gameBoard.ClearAllRows();
 
-        if (m_gameBoard.CompletedRows > 0) {
-            m_scoreManager.ScoreLines(m_gameBoard.CompletedRows);
-        }
+        m_scoreManager.ScoreLines(m_gameBoard.CompletedRows);
+
         if (m_scoreManager.Level > curLevel) {
-            m_dropIntervalModded = Mathf.Clamp(m_dropInterval - (((float)m_scoreManager.Level - 1) * 0.05f), 0.05f,1f);
+            m_dropIntervalModded = Mathf.Clamp(m_dropInterval - (((float)m_scoreManager.Level - 1) * 0.1f), 0.1f,1f);
         }
     }
 
     private void GameOver() {
         m_activeShape.MoveUp();
+        m_activeShape = null;
         m_gameOver = true;
         m_gameOverPanel.SetActive(true);
     }
@@ -125,6 +129,7 @@ public class GameController : MonoBehaviour {
     public void Restart() {
         IsPaused = false;
         m_scoreManager.Reset();
+        m_dropIntervalModded = m_dropInterval;
         UpdatePauseState();
         foreach(Transform child in m_spawner.transform) {
             Destroy(child.gameObject);
@@ -147,5 +152,9 @@ public class GameController : MonoBehaviour {
             m_pausePanel.SetActive(IsPaused);
         }
         Time.timeScale = (IsPaused) ? 0 : 1;
+    }
+
+    public void Exit() {
+        Application.Quit();
     }
 }
